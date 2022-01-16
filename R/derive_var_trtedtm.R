@@ -49,7 +49,8 @@
 derive_var_trtedtm <- function(dataset,
                                dataset_ex,
                                filter_ex = (EXDOSE > 0 | (EXDOSE == 0 & str_detect(EXTRT, "PLACEBO"))) & nchar(EXENDTC) >= 10 , # nolint
-                               subject_keys = vars(STUDYID, USUBJID)) {
+                               subject_keys = vars(STUDYID, USUBJID),
+                               time_zone = "UTC") {
 
   assert_data_frame(dataset, subject_keys)
   assert_data_frame(dataset_ex, required_vars = quo_c(subject_keys, vars(EXENDTC, EXSEQ)))
@@ -66,7 +67,8 @@ derive_var_trtedtm <- function(dataset,
   add[["TRTEDTM"]] <- convert_dtc_to_dtm(
     dtc = add$EXENDTC,
     date_imputation = "last",
-    time_imputation = "last"
+    time_imputation = "last",
+    time_zone = time_zone
   )
 
   left_join(dataset, select(add, !!!subject_keys, TRTEDTM), by = vars2chr(subject_keys))

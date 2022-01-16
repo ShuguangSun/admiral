@@ -129,7 +129,8 @@ derive_params_exposure <- function(dataset,
                                    analysis_var,
                                    summary_fun,
                                    filter = NULL,
-                                   set_values_to = NULL) {
+                                   set_values_to = NULL,
+                                   time_zone = "UTC") {
   by_vars <- assert_vars(by_vars)
   analysis_var <- assert_symbol(enquo(analysis_var))
 
@@ -178,8 +179,10 @@ derive_params_exposure <- function(dataset,
     expo_data <- add_data %>%
       left_join(dates, by = by_vars) %>%
       mutate(
-        ASTDTM = coalesce(as_iso_dtm(ASTDTM), as_iso_dtm(temp_start)),
-        AENDTM = coalesce(as_iso_dtm(AENDTM), as_iso_dtm(temp_end))
+        ASTDTM = coalesce(as_iso_dtm(ASTDTM, time_zone = time_zone),
+                          as_iso_dtm(temp_start, time_zone = time_zone)),
+        AENDTM = coalesce(as_iso_dtm(AENDTM, time_zone = time_zone),
+                          as_iso_dtm(temp_end, time_zone = time_zone))
       ) %>%
       select(-starts_with("temp_"))
 

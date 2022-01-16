@@ -475,7 +475,8 @@ filter_date_sources <- function(sources,
                                 by_vars,
                                 create_datetime = FALSE,
                                 subject_keys,
-                                mode) {
+                                mode,
+                                time_zone = "UTC") {
   assert_list_of(sources, "tte_source")
   assert_list_of(source_datasets, "data.frame")
   assert_logical_scalar(create_datetime)
@@ -506,7 +507,7 @@ filter_date_sources <- function(sources,
     # add date variable and accompanying variables
     if (is.instant(pull(data[[i]], !!date))) {
       if (create_datetime) {
-        date_derv <- vars(!!date_var := as_datetime(!!date))
+        date_derv <- vars(!!date_var := as_datetime(!!date, tz = time_zone))
       } else {
         date_derv <- vars(!!date_var := date(!!date))
       }
@@ -516,7 +517,8 @@ filter_date_sources <- function(sources,
           !!date_var := convert_dtc_to_dtm(
             !!date,
             date_imputation = "first",
-            time_imputation = "first"
+            time_imputation = "first",
+            time_zone = time_zone
           )
         )
       } else {

@@ -347,7 +347,8 @@ convert_dtc_to_dtm <- function(dtc,
                                date_imputation = NULL,
                                time_imputation = NULL,
                                min_dates = NULL,
-                               max_dates = NULL) {
+                               max_dates = NULL,
+                               time_zone = "UTC") {
   assert_character_vector(dtc)
   warn_if_invalid_dtc(dtc, is_valid_dtc(dtc))
 
@@ -358,7 +359,7 @@ convert_dtc_to_dtm <- function(dtc,
       min_dates = min_dates,
       max_dates = max_dates
     ) %>%
-    as_iso_dtm()
+    as_iso_dtm(time_zone = time_zone)
 }
 
 #' Derive the Date Imputation Flag

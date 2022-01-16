@@ -105,6 +105,7 @@ derive_last_dose <- function(dataset,
                              new_var,
                              output_datetime = TRUE,
                              check_dates_only = FALSE,
+                             time_zone = "UTC",
                              traceability_vars = NULL) {
 
   filter_ex <- assert_filter_cond(enquo(filter_ex), optional = TRUE)
@@ -156,17 +157,19 @@ derive_last_dose <- function(dataset,
     mutate(DOMAIN = NULL) %>%
     inner_join(dataset_ex, by = by_vars_str) %>%
     mutate_at(vars(!!dose_end, !!analysis_date),
-              ~ `if`(is_date(.), convert_dtm_to_dtc(.), .)) %>%
+              ~ `if`(is_date(.), convert_dtm_to_dtc(., time_zone = time_zone), .)) %>%
     mutate(
       tmp_dose_end_date = convert_dtc_to_dtm(
         dtc = !!dose_end,
         date_imputation = NULL,
-        time_imputation = "00:00:00"
+        time_imputation = "00:00:00",
+        time_zone = time_zone
       ),
       tmp_analysis_date = convert_dtc_to_dtm(
         dtc = !!analysis_date,
         date_imputation = NULL,
-        time_imputation = "23:59:59"
+        time_imputation = "23:59:59",
+        time_zone = time_zone
       )
     ) %>%
     group_by(!!!by_vars, !!dataset_seq_var)
